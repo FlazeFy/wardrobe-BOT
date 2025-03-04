@@ -8,7 +8,7 @@ const conf = JSON.parse(configFile)
 const { generateRandomNumber } = require('./helpers/generator')
 
 // Modules
-const { repoAllClothes } = require('./modules/clothes/repositories')
+const { repoAllClothes, repoAllClothesUsedHistory } = require('./modules/clothes/repositories')
 const { generatePaginationBot } = require('./helpers/telegram')
 
 const bot = new Telegraf(conf.TOKEN)
@@ -59,6 +59,12 @@ bot.on('message', async (ctx) => {
                     generatePaginationBot(ctx,page,'/Show All Clothes')
                     break
 
+                case 1: // Show All Clothes Used History
+                    [msg, page] = await repoAllClothesUsedHistory(ctx)
+                    ctx.reply(`${present_respond[idx_rand_present-1]} clothes used history...\n\n${msg}`, { parse_mode:'HTML'})
+                    generatePaginationBot(ctx,page,'/Show Used Clothes History')
+                    break
+
                 default:
                     ctx.reply(`Sorry I'dont know your command`)
                     break
@@ -67,6 +73,24 @@ bot.on('message', async (ctx) => {
             ctx.reply(`Please choose an option in Menu:`, 
                 Markup.keyboard(menuOptions.map(option => [option])).resize()
             );
+        } else if (/^Page \d+ - \/Show (All Clothes|Used Clothes History)$/.test(message)) {
+            const parts = message.split(' - ')
+            const selectedPage = parseInt(parts[0].split(' ')[1])
+            const topic = parts[1]
+            ctx.session.currentPage = selectedPage
+            let msg, page
+
+            if(topic === '/Show All Clothes'){
+                [msg, page] = await repoAllClothes(ctx)
+                ctx.reply(`${present_respond[idx_rand_present-1]} all clothes...\n\n${msg}`, { parse_mode:'HTML'})
+                generatePaginationBot(ctx, page, '/Show All Clothes')
+            } else if(topic === '/Show Used Clothes History'){
+                [msg, page] = await repoAllClothesUsedHistory(ctx)
+                ctx.reply(`${present_respond[idx_rand_present-1]} clothes used history...\n\n${msg}`, { parse_mode:'HTML'})
+                generatePaginationBot(ctx, page, '/Show Used Clothes History')
+            } 
+
+            ctx.reply(`Opened page ${selectedPage}`);
         } else {
             ctx.reply(`Unknown command. Please try again`)
         }

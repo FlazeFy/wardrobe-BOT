@@ -1,5 +1,5 @@
 const { ucEachFirstWord } = require("../../helpers/typography")
-const { handleShowAllClothes } = require("./queries")
+const { handleShowAllClothes, handleShowAllClothesUsedHistory } = require("./queries")
 
 const repoAllClothes = async (ctx) => {
     try {
@@ -35,6 +35,30 @@ const repoAllClothes = async (ctx) => {
     }
 }
 
+const repoAllClothesUsedHistory = async (ctx) => {
+    try {
+        const current_page = ctx.session.currentPage || 1
+        const token = '388|T2gbtS9bSy1rtlnfqz64lqVoYjsZQVGjuS8ZXk5L8a317710'
+        const [data, page_length, status] = await handleShowAllClothesUsedHistory('desc',current_page,token)
+        
+        if(data){
+            let msg = ''
+            data.forEach((dt,idx) => {
+                const note_holder = `\nNotes : ${dt.clothes_note ?? '-'}`
+
+                msg += `${idx+1}. <b>${dt.clothes_name}</b>\nType : ${dt.clothes_type}\nUsed Context : ${dt.used_context}\nUsed At : ${dt.created_at}${note_holder}\n\n`
+            });
+
+            return [msg, page_length]
+        } else {
+            return [status, null]
+        }
+    } catch (err) {
+        return [err, null]
+    }
+}
+
 module.exports = {
     repoAllClothes,
+    repoAllClothesUsedHistory
 }
