@@ -55,9 +55,10 @@ bot.on('message', async (ctx) => {
             switch (index) {
                 case 0: // Show All Clothes
                     [msg, page] = await repoAllClothes(ctx)
-                    ctx.reply(`${present_respond[idx_rand_present-1]} all clothes...\n\n${msg}`)
+                    ctx.reply(`${present_respond[idx_rand_present-1]} all clothes...\n\n${msg}`, { parse_mode:'HTML'})
+                    generatePaginationBot(ctx,page,'/Show All Clothes')
                     break
-                
+
                 default:
                     ctx.reply(`Sorry I'dont know your command`)
                     break
