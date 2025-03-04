@@ -8,7 +8,7 @@ const conf = JSON.parse(configFile)
 const { generateRandomNumber } = require('./helpers/generator')
 
 // Modules
-const { repoAllClothes, repoAllClothesUsedHistory } = require('./modules/clothes/repositories')
+const { repoAllClothes, repoAllClothesUsedHistory, repoAllClothesSchedule } = require('./modules/clothes/repositories')
 const { generatePaginationBot } = require('./helpers/telegram')
 const { repoAllAppsHistory } = require('./modules/history/repositories')
 const { repoAllOutfit } = require('./modules/outfit/repositories')
@@ -66,6 +66,11 @@ bot.on('message', async (ctx) => {
                     [msg, page] = await repoAllClothesUsedHistory(ctx)
                     ctx.reply(`${present_respond[idx_rand_present-1]} clothes used history...\n\n${msg}`, { parse_mode:'HTML'})
                     generatePaginationBot(ctx,page,'/Show Used Clothes History')
+                    break
+
+                case 3: // Show Schedule
+                    msg = await repoAllClothesSchedule(ctx)
+                    ctx.reply(`${present_respond[idx_rand_present-1]} schedule...\n\n${msg}`, { parse_mode:'HTML'})
                     break
 
                 case 6: // Show Apps History
