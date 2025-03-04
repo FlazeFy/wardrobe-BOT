@@ -11,6 +11,7 @@ const { generateRandomNumber } = require('./helpers/generator')
 const { repoAllClothes, repoAllClothesUsedHistory } = require('./modules/clothes/repositories')
 const { generatePaginationBot } = require('./helpers/telegram')
 const { repoAllAppsHistory } = require('./modules/history/repositories')
+const { repoAllOutfit } = require('./modules/outfit/repositories')
 
 const bot = new Telegraf(conf.TOKEN)
 bot.use(session())
@@ -23,6 +24,7 @@ const menuOptions = [
     '/Show Wash History',
     '/Show Wishlist',
     '/Show Apps History',
+    '/Show All Outfit',
     '/Used a Clothes',
     '/Randomize My Outfit',
     '/My Outfit Template',
@@ -72,6 +74,12 @@ bot.on('message', async (ctx) => {
                     generatePaginationBot(ctx,page,'/Show Apps History')
                     break
 
+                case 7: // Show All Outfit
+                    [msg, page] = await repoAllOutfit(ctx)
+                    ctx.reply(`${present_respond[idx_rand_present-1]} all outfit...\n\n${msg}`, { parse_mode:'HTML'})
+                    generatePaginationBot(ctx,page,'/Show All Outfit')
+                    break
+
                 default:
                     ctx.reply(`Sorry I'dont know your command`)
                     break
@@ -99,6 +107,10 @@ bot.on('message', async (ctx) => {
                 [msg, page] = await repoAllClothesUsedHistory(ctx)
                 ctx.reply(`${present_respond[idx_rand_present-1]} apps history...\n\n${msg}`, { parse_mode:'HTML'})
                 generatePaginationBot(ctx, page, '/Show Apps History')
+            } else if(topic === '/Show All Outfit'){
+                [msg, page] = await repoAllOutfit(ctx)
+                ctx.reply(`${present_respond[idx_rand_present-1]} all outfit...\n\n${msg}`, { parse_mode:'HTML'})
+                generatePaginationBot(ctx, page, '/Show All Outfit')
             } 
 
             ctx.reply(`Opened page ${selectedPage}`);
