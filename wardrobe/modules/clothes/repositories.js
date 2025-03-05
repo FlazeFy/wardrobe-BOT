@@ -1,5 +1,5 @@
 const { ucEachFirstWord } = require("../../helpers/typography")
-const { handleShowAllClothes, handleShowAllClothesUsedHistory, handleShowAllClothesSchedule } = require("./queries")
+const { handleShowAllClothes, handleShowAllClothesUsedHistory, handleShowAllClothesSchedule, handleShowAllClothesWashHistory } = require("./queries")
 
 const repoAllClothes = async (ctx) => {
     try {
@@ -58,9 +58,8 @@ const repoAllClothesUsedHistory = async (ctx) => {
     }
 }
 
-const repoAllClothesSchedule = async (ctx) => {
+const repoAllClothesSchedule = async () => {
     try {
-        const current_page = ctx.session.currentPage || 1
         const token = '388|T2gbtS9bSy1rtlnfqz64lqVoYjsZQVGjuS8ZXk5L8a317710'
         const [data, status] = await handleShowAllClothesSchedule(token)
         
@@ -79,8 +78,30 @@ const repoAllClothesSchedule = async (ctx) => {
     }
 }
 
+const repoAllClothesWashHistory = async (ctx) => {
+    try {
+        const current_page = ctx.session.currentPage || 1
+        const token = '388|T2gbtS9bSy1rtlnfqz64lqVoYjsZQVGjuS8ZXk5L8a317710'
+        const [data, page_length, status] = await handleShowAllClothesWashHistory(current_page,token)
+        
+        if(data){
+            let msg = ''
+            data.forEach((dt,idx) => {
+                msg += `${idx+1}. <b>${dt.clothes_name}</b>\nType : ${dt.clothes_type}\nWash Type : ${dt.wash_type}\nMade From : ${dt.clothes_made_from}\nColor : ${dt.clothes_color}\nWash${dt.finished_at ? ` - Finish at` : ' at (in-progress)'} : ${dt.wash_at}${dt.finished_at ? ` - ${dt.finished_at}` : ''}\n\n`
+            });
+
+            return [msg, page_length]
+        } else {
+            return [status, null]
+        }
+    } catch (err) {
+        return [err, null]
+    }
+}
+
 module.exports = {
     repoAllClothes,
     repoAllClothesUsedHistory,
-    repoAllClothesSchedule
+    repoAllClothesSchedule,
+    repoAllClothesWashHistory
 }

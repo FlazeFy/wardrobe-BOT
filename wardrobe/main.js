@@ -8,7 +8,7 @@ const conf = JSON.parse(configFile)
 const { generateRandomNumber } = require('./helpers/generator')
 
 // Modules
-const { repoAllClothes, repoAllClothesUsedHistory, repoAllClothesSchedule } = require('./modules/clothes/repositories')
+const { repoAllClothes, repoAllClothesUsedHistory, repoAllClothesSchedule, repoAllClothesWashHistory } = require('./modules/clothes/repositories')
 const { generatePaginationBot } = require('./helpers/telegram')
 const { repoAllAppsHistory } = require('./modules/history/repositories')
 const { repoAllOutfit } = require('./modules/outfit/repositories')
@@ -69,8 +69,14 @@ bot.on('message', async (ctx) => {
                     break
 
                 case 3: // Show Schedule
-                    msg = await repoAllClothesSchedule(ctx)
+                    msg = await repoAllClothesSchedule()
                     ctx.reply(`${present_respond[idx_rand_present-1]} schedule...\n\n${msg}`, { parse_mode:'HTML'})
+                    break
+
+                case 4: // Show Wash History
+                    [msg, page] = await repoAllClothesWashHistory(ctx)
+                    ctx.reply(`${present_respond[idx_rand_present-1]} wash history...\n\n${msg}`, { parse_mode:'HTML'})
+                    generatePaginationBot(ctx,page,'/Show Wash History')
                     break
 
                 case 6: // Show Apps History
@@ -93,7 +99,7 @@ bot.on('message', async (ctx) => {
             ctx.reply(`Please choose an option in Menu:`, 
                 Markup.keyboard(menuOptions.map(option => [option])).resize()
             );
-        } else if (/^Page \d+ - \/Show (All Clothes|Used Clothes History)$/.test(message)) {
+        } else if (/^Page \d+ - \/Show (All Clothes|Used Clothes History|Wash History|Apps History|All Outfit)$/.test(message)) {
             const parts = message.split(' - ')
             const selectedPage = parseInt(parts[0].split(' ')[1])
             const topic = parts[1]
@@ -108,6 +114,10 @@ bot.on('message', async (ctx) => {
                 [msg, page] = await repoAllClothesUsedHistory(ctx)
                 ctx.reply(`${present_respond[idx_rand_present-1]} clothes used history...\n\n${msg}`, { parse_mode:'HTML'})
                 generatePaginationBot(ctx, page, '/Show Used Clothes History')
+            } else if(topic === '/Show Wash History'){
+                [msg, page] = await repoAllClothesWashHistory(ctx)
+                ctx.reply(`${present_respond[idx_rand_present-1]} wash history...\n\n${msg}`, { parse_mode:'HTML'})
+                generatePaginationBot(ctx, page, '/Show Wash History')
             } else if(topic === '/Show Apps History'){
                 [msg, page] = await repoAllClothesUsedHistory(ctx)
                 ctx.reply(`${present_respond[idx_rand_present-1]} apps history...\n\n${msg}`, { parse_mode:'HTML'})
