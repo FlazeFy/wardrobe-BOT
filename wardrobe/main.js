@@ -12,6 +12,7 @@ const { repoAllClothes, repoAllClothesUsedHistory, repoAllClothesSchedule, repoA
 const { generatePaginationBot } = require('./helpers/telegram')
 const { repoAllAppsHistory } = require('./modules/history/repositories')
 const { repoAllOutfit } = require('./modules/outfit/repositories')
+const { repoMostUsedClothes } = require('./modules/stats/repositories')
 
 const bot = new Telegraf(conf.TOKEN)
 bot.use(session())
@@ -27,7 +28,7 @@ const menuOptions = [
     '/Show All Outfit',
     '/Used a Clothes',
     '/Randomize My Outfit',
-    '/My Outfit Template',
+    '/Show Most Used Clothes',
 
     '/Exit Bot',
 ];
@@ -91,6 +92,11 @@ bot.on('message', async (ctx) => {
                     generatePaginationBot(ctx,page,'/Show All Outfit')
                     break
 
+                case 10: // Show Most Used Clothes
+                    [msg] = await repoMostUsedClothes(ctx)
+                    ctx.reply(`${present_respond[idx_rand_present-1]} most used clothes...\n\n${msg}`, { parse_mode:'HTML'})
+                    break
+
                 default:
                     ctx.reply(`Sorry I'dont know your command`)
                     break
@@ -126,6 +132,9 @@ bot.on('message', async (ctx) => {
                 [msg, page] = await repoAllOutfit(ctx)
                 ctx.reply(`${present_respond[idx_rand_present-1]} all outfit...\n\n${msg}`, { parse_mode:'HTML'})
                 generatePaginationBot(ctx, page, '/Show All Outfit')
+            } else if(topic === '/Show Most Used Clothest'){
+                [msg] = await repoMostUsedClothes(ctx)
+                ctx.reply(`${present_respond[idx_rand_present-1]} most used clothes...\n\n${msg}`, { parse_mode:'HTML'})
             } 
 
             ctx.reply(`Opened page ${selectedPage}`);
