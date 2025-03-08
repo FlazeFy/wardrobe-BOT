@@ -8,7 +8,7 @@ const conf = JSON.parse(configFile)
 const { generateRandomNumber } = require('./helpers/generator')
 
 // Modules
-const { repoAllClothes, repoAllClothesUsedHistory, repoAllClothesSchedule, repoAllClothesWashHistory } = require('./modules/clothes/repositories')
+const { repoAllClothes, repoAllClothesUsedHistory, repoAllClothesSchedule, repoAllClothesWashHistory, repoLastHistory } = require('./modules/clothes/repositories')
 const { generatePaginationBot } = require('./helpers/telegram')
 const { repoAllAppsHistory } = require('./modules/history/repositories')
 const { repoAllOutfit } = require('./modules/outfit/repositories')
@@ -30,6 +30,7 @@ const menuOptions = [
     '/Randomize My Outfit',
     '/Show Most Used Clothes',
     '/Show Most Used Clothes for Daily',
+    '/Show Last History',
 
     '/Exit Bot',
 ];
@@ -101,6 +102,11 @@ bot.on('message', async (ctx) => {
                 case 11: // Show Most Used Clothes for Daily
                     [msg] = await repoMostUsedDailyClothesPerType()
                     ctx.reply(`${present_respond[idx_rand_present-1]} most used clothes...\n\n${msg}`, { parse_mode:'HTML'})
+                    break
+
+                case 12: // Show Last History
+                    msg = await repoLastHistory()
+                    ctx.reply(`${present_respond[idx_rand_present-1]} last history...\n\n${msg}`, { parse_mode:'HTML'})
                     break
 
                 default:

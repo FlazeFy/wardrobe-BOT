@@ -102,9 +102,30 @@ const handleShowAllClothesWashHistory = async (page,token) => {
     }
 }
 
+const handleShowLastHistory = async (token) => {
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/v1/clothes/last_history`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        
+        let data, status
+
+        status = response.status
+        const res = response.data
+        data = res.data
+
+        return [data, status]
+    } catch (err) {
+        return [null,err]
+    }
+}
+
 module.exports = {
     handleShowAllClothes,
     handleShowAllClothesUsedHistory,
     handleShowAllClothesSchedule,
-    handleShowAllClothesWashHistory
+    handleShowAllClothesWashHistory,
+    handleShowLastHistory
 }

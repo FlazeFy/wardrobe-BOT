@@ -1,5 +1,5 @@
 const { ucEachFirstWord } = require("../../helpers/typography")
-const { handleShowAllClothes, handleShowAllClothesUsedHistory, handleShowAllClothesSchedule, handleShowAllClothesWashHistory } = require("./queries")
+const { handleShowAllClothes, handleShowAllClothesUsedHistory, handleShowAllClothesSchedule, handleShowAllClothesWashHistory, handleShowLastHistory } = require("./queries")
 
 const repoAllClothes = async (ctx) => {
     try {
@@ -99,9 +99,27 @@ const repoAllClothesWashHistory = async (ctx) => {
     }
 }
 
+const repoLastHistory = async () => {
+    try {
+        const token = '388|T2gbtS9bSy1rtlnfqz64lqVoYjsZQVGjuS8ZXk5L8a317710'
+        const [data, status] = await handleShowLastHistory(token)
+        
+        if(data){
+            let msg = `Last Added : ${data.last_added_clothes ? `<b>${data.last_added_clothes}</b> on ${data.last_added_date}` : '-'}\nLast Deleted : ${data.last_deleted_clothes ? `<b>${data.last_deleted_clothes}</b> on ${data.last_deleted_date}` : '-'}\n`
+
+            return msg
+        } else {
+            return status
+        }
+    } catch (err) {
+        return [err, null]
+    }
+}
+
 module.exports = {
     repoAllClothes,
     repoAllClothesUsedHistory,
     repoAllClothesSchedule,
-    repoAllClothesWashHistory
+    repoAllClothesWashHistory,
+    repoLastHistory
 }
