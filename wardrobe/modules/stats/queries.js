@@ -20,6 +20,27 @@ const handleShowMostUsedClothes = async (token) => {
     }
 }
 
+const handleShowMostUsedDailyClothesPerType = async (token) => {
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/v1/stats/clothes/most/used/daily`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        
+        let data, status
+
+        status = response.status
+        const res = response.data
+        data = res.data
+
+        return [data, status]
+    } catch (err) {
+        return [null,err]
+    }
+}
+
 module.exports = {
     handleShowMostUsedClothes,
+    handleShowMostUsedDailyClothesPerType
 }
